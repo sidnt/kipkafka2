@@ -8,5 +8,6 @@ lazy val root = (project in file(".")).
       version      := "0.0.1"
     )),
     name := "kipkafka2",
-    libraryDependencies += scalaTest % Test
+    libraryDependencies += scalaTest % Test,
+    libraryDependencies += "com.lightbend" %%  "kafka-streams-scala" % "0.2.1"
   )

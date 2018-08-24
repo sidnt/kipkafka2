@@ -13,3 +13,6 @@ object Models {
   case class Employee(id:Int, firstname:String, lastname:String, gender:String)
   case class Person(id:Int,name:String)
 }
+
+// sqlite> create table Employee(id integer primary key autoincrement, firstname VARCHAR(255), lastname VARCHAR(255), gender VARCHAR(255));
+// sqlite> create table Person(id integer primary key autoincrement, name VARCHAR(255));
