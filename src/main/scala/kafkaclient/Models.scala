@@ -6,12 +6,17 @@ package kafkaclient
 // 01, Jane, Doe, Male
 // 02, Lizzie, Mc.Guire, Female
 
+// Sink Table
+// ID, NAME
+// 01, Mr. Jane Doe
+// 02, Ms. Lizzie Mc.Guire
+
 // Employee: ID int, FIRST_NAME string, LAST_NAME string, GENDER string
 // Person: ID int, NAME string
 
 object Models {
   case class Employee(id:Int, firstname:String, lastname:String, gender:String)
-  case class Person(id:Int,name:String)
+  case class Person(id:Int, name:String)
 }
 
 // sqlite> create table Employee(id integer primary key autoincrement, firstname VARCHAR(255), lastname VARCHAR(255), gender VARCHAR(255));
