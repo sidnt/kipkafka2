@@ -8,7 +8,7 @@ import java.io.{ByteArrayOutputStream, ByteArrayInputStream, ObjectOutputStream,
 
 object SerDes {
 
-  implicit val EmployeeSerDe: Serde[Employee] = new Serde[Employee] {
+  val EmployeeSerDe: Serde[Employee] = new Serde[Employee] {
 
     def close(): Unit = {}
     def configure(configs: java.util.Map[String, _], isKey: Boolean): Unit = {}
@@ -42,17 +42,25 @@ object SerDes {
       def deserialize(topic: String, bytes: Array[Byte]): Employee = {
 
         try {
-          val byteInputStream = new ByteArrayInputStream(bytes)
-          val inputObject = new ObjectInputStream(byteInputStream)
-          val objectDeserialized = inputObject.readObject().asInstanceOf[Employee]
-          objectDeserialized
-          // val stringRep = bytes.map(_.toChar).foldLeft("")(_+_) //"Employee(1, Jane, Doe, Male)"
-          // val arr = stringRep split "," //
-          // val (id, fname, lname, gender) = ( arr(0).drop(9).toInt, arr(1), arr(2), arr(3).init )
-          // Employee(id,fname, lname, gender)
+//          val byteInputStream = new ByteArrayInputStream(bytes)
+//          val inputObject = new ObjectInputStream(byteInputStream)
+//          val objectDeserialized = inputObject.readObject().asInstanceOf[Employee]
+//          objectDeserialized
+
+           val stringRep = bytes.map(_.toChar).foldLeft("")(_+_) //"Employee(1, Jane, Doe, Male)"
+           println(stringRep)
+           val dirty:String = (stringRep split "payload").tail.head.drop(3)//
+           val clean = dirty.
+             replace(""""""","").
+             replace("}}","").
+             split(",").
+             map(_.split(":")).
+             map(_(1))
+           val (id, fname, lname, gender) = ( clean(0).toInt, clean(1), clean(2), clean(3) )
+           Employee(id,fname, lname, gender)
         }
         catch {
-          case ex: Exception => throw new Exception("deserialize to Employee: " + ex.getMessage)
+          case ex: Exception => throw new Exception("Deserialize to Employee: " + ex.getMessage)
         }
 
       }

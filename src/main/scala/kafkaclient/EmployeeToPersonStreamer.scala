@@ -3,14 +3,8 @@ package kafkaclient
 import com.lightbend.kafka.scala.streams.KStreamS
 import com.lightbend.kafka.scala.streams.ImplicitConversions._
 import com.lightbend.kafka.scala.streams.DefaultSerdes._
-
-
-import org.apache.kafka.streams.StreamsBuilder
-import org.apache.kafka.streams.StreamsConfig
-
+import org.apache.kafka.streams.{Consumed, KafkaStreams, StreamsBuilder, StreamsConfig}
 import org.apache.kafka.streams.kstream.KStream
-import org.apache.kafka.streams.KafkaStreams
-
 import java.util.Properties
 
 import Models._
@@ -21,14 +15,13 @@ import SerDes._
 object EmployeeToPersonStreamer extends App {
 
   val builder: StreamsBuilder  = new StreamsBuilder();
-  val sourceStream: KStream[String, Employee] = builder.stream("kipkafka2-Employee")//, Consumed.with(stringSerde, stringSerde))
-  
+  val sourceStream: KStream[String, Employee] = builder.stream("kipkafka2b-Employee",consumedFromSerde(stringSerde,SerDes.EmployeeSerDe))
   val inputStream:KStreamS[String, Employee] = new KStreamS(sourceStream)
   
   val interimStream:KStreamS[String, Person] = inputStream.mapValues(employeeToPerson(_))//.to(Serdes.String(), kafkaclient.PersonSerDe)
   println("trying to print")
 
-  interimStream.to("kipkafka2-Person")
+  interimStream.to("kipkafka2b-Person")
 
   val props = new Properties()
   props.put(StreamsConfig.APPLICATION_ID_CONFIG, "EmployeeToPersonStreamer")
