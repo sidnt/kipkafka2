@@ -68,7 +68,7 @@ object JsonSerDes {
       override def serialize(topic: String, per: Person): Array[Byte] = {
 
         try {
-          per.toString.getBytes
+          per.asJson.noSpaces.getBytes
         }
 
         catch {
