@@ -5,7 +5,9 @@ import org.apache.kafka.common.serialization._
 import Models._
 import java.util
 
-object SerDes {
+import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
+
+object JsonSerDes {
 
   val EmployeeSerDe: Serde[Employee] = new Serde[Employee] {
 
@@ -29,35 +31,19 @@ object SerDes {
       override def close(): Unit = {}
     }
 
-
     def deserializer: Deserializer[Employee] = new Deserializer[Employee] {
 
       def close(): Unit = {}
+
       def configure(configs: java.util.Map[String, _], isKey: Boolean): Unit = {}
 
       def deserialize(topic: String, bytes: Array[Byte]): Employee = {
 
         try {
-//          val byteInputStream = new ByteArrayInputStream(bytes)
-//          val inputObject = new ObjectInputStream(byteInputStream)
-//          val objectDeserialized = inputObject.readObject().asInstanceOf[Employee]
-//          objectDeserialized
-
-           val stringRep = bytes.map(_.toChar).foldLeft("")(_+_) //"Employee(1, Jane, Doe, Male)"
-           println(stringRep)
-           val dirty:String = (stringRep split "payload").tail.head.drop(3)//
-//           val dirty:String = (stringRep split "-").tail.head.drop(2)
-           val clean = dirty.
-             replace(""""""","").
-             replace("}}","").
-             split(",").
-             map(_.split(":")).
-             map(_(1))
-           val (id, fname, lname, gender) = ( clean(0).toInt, clean(1), clean(2), clean(3) )
-           Employee(id,fname, lname, gender)
-
-            //bytes is actually containing a JSON string
-//          val rawJson =
+          //bytes is actually containing a JSON string
+          val rawJson:String = bytes.map(_.toChar).foldLeft("")(_+_)
+//          val circeJson = parse(rawJson).getOrElse(Json.Null)
+          decode[Employee](rawJson).getOrElse(Employee(0,"","",""))
         }
         catch {
           case ex: Exception => throw new Exception("Deserialize to Employee: " + ex.getMessage)
@@ -98,20 +84,13 @@ object SerDes {
     def deserializer: Deserializer[Person] = new Deserializer[Person] {
 
       def close(): Unit = {}
-
       def configure(configs: java.util.Map[String, _], isKey: Boolean): Unit = {}
 
       def deserialize(topic: String, bytes: Array[Byte]): Person = {
 
         try {
-//          val byteInputStream = new ByteArrayInputStream(bytes)
-//          val inputObject = new ObjectInputStream(byteInputStream)
-//          val objectDeserialized = inputObject.readObject().asInstanceOf[Person]
-//          objectDeserialized
-           val stringRep = bytes.map(_.toChar).foldLeft("")(_+_) //"Person(1, Mr. Jane Doe)"
-           val arr = stringRep split ","
-           val (id, name) = (arr(0).drop(7).toInt, arr(1).init)
-           Person(id,name)
+          val rawJson:String = bytes.map(_.toChar).foldLeft("")(_+_)
+          decode[Person](rawJson).getOrElse(Person(0,""))
         }
         catch {
           case ex: Exception => throw new Exception("Deserialize to Person: " + ex.getMessage)
